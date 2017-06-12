@@ -1,0 +1,47 @@
+.tableBikesDetails.search{
+    display: none;
+}
+#search
+{
+    margin: 14px;
+    width:380px;
+    position:relative;
+}
+
+#label
+{
+    float: left;
+}
+
+#search_box
+{
+    float: left;
+    margin-left: 5px;
+    background-image: url('./search_field.png');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: 0;
+    height: 23px;
+    font-family: "Trebuchet MS";
+    font-size: 14px;
+    width: 200px;
+    padding-left: 16px;
+    padding-top: 0;
+    color: white;
+}
+
+#search_button
+{
+    position: relative;
+    background: url('./search_button.png') no-repeat;
+    width: 33px;
+    height: 23px;
+    border: 0;
+    margin-left: 339px;
+}
+
+#search_word
+{
+    display: none;
+}

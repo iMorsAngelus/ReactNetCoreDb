@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="build\node_modules\**" />
+    <Compile Remove="build\public\**" />
+    <Compile Remove="build\src\**" />
+    <Content Remove="build\node_modules\**" />
+    <Content Remove="build\public\**" />
+    <Content Remove="build\src\**" />
+    <EmbeddedResource Remove="build\node_modules\**" />
+    <EmbeddedResource Remove="build\public\**" />
+    <EmbeddedResource Remove="build\src\**" />
+    <None Remove="build\node_modules\**" />
+    <None Remove="build\public\**" />
+    <None Remove="build\src\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="build\package.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="build\.gitignore" />
+    <None Remove="build\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="build\" />
+  </ItemGroup>
+
+</Project>
