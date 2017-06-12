@@ -32,7 +32,7 @@ namespace ReactNetCoreDB
             // Add framework services.
             services.AddMvc();
             //Scaffold-DbContext "Server=WS194;Database=AdventureWorks2014;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
-            var connection = @"Server=WS194;Database=AdventureWorks2014;Trusted_Connection=True;";
+            var connection = @"Server=.;Database=AdventureWorks2014;Trusted_Connection=True;";
             services.AddDbContext<AdventureWorks2014Context>(options => options.UseSqlServer(connection));
         }
 
