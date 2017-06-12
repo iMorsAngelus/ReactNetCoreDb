@@ -245,6 +245,4 @@ _Pvt_Extensions
 .fake/
 /ReactNetCoreDB/build/.vscode
 /ReactNetCoreDB/build/.vscode
-*.json
-*.json
 /ReactNetCoreDB/build/.vscode/launch.json
