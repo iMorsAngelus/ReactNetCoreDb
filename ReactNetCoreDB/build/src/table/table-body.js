@@ -17,12 +17,11 @@ export class TableBody extends Component {
                         items.push(<img 
                             id = {item.id}
                             src = {"data:image/png;base64,"+item.image}
-                            alt={"bike image"}
+                            alt={"bike"}
                             className="image"/>
                         );
                         return <TableRow 
                                     id={item.id}
-                                    my-description = {item.description}
                                     key={item.id} 
                                     onRowClick = {this.props.onRowClick}
                                     className={this.props.className} 

@@ -1,5 +1,4 @@
-﻿//[Route("api/[controller]")]
-using System;
+﻿using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactNetCoreDB.Models;
 
-namespace NetCoreDB.Controllers
+namespace ReactNetCoreDB.Controllers
 {
     public class HomeController : Controller
     {
         AdventureWorks2014Context db;
-
         //Конструктор
         public HomeController(DbContextOptions<AdventureWorks2014Context> option)
         {
@@ -21,8 +19,9 @@ namespace NetCoreDB.Controllers
         }
 
         [HttpGet("/AllBikes")]
-        public IEnumerable<object> AllBikes()
+        public List<dataBikes> AllBikes()
         {
+            //Use join, because of decreasing speed by subquery method
             var populary = from product in db.Product
                            join transactionHistory in db.TransactionHistory on product.ProductId equals transactionHistory.ProductId
                            join productSubCategory in db.ProductSubcategory on product.ProductSubcategoryId equals productSubCategory.ProductSubcategoryId
@@ -36,44 +35,85 @@ namespace NetCoreDB.Controllers
                            };
             
             var bikes = from bike in db.Product
+                        //Join populary bike
                         join pop in populary on bike.ProductId equals pop.id into leftJoin
+                        //join photo
+                        join productPhoto in db.ProductProductPhoto on bike.ProductId equals productPhoto.ProductId
+                        join photo in db.ProductPhoto on productPhoto.ProductPhotoId equals photo.ProductPhotoId
+                        //Filter by category
                         join productSubCategory in db.ProductSubcategory on bike.ProductSubcategoryId equals productSubCategory.ProductSubcategoryId
                         join productCategory in db.ProductCategory on productSubCategory.ProductCategoryId equals productCategory.ProductCategoryId
+                        //Left join for get all bikes (Sold and not sold)
                         from pop in leftJoin.DefaultIfEmpty()
                         where productCategory.Name.Equals("Bikes")
+                        //Select main field
                         select new
                         {
                             id = bike.ProductId,
                             name = bike.Name,
                             price = bike.ListPrice,
                             sell_count = (pop == null)? 0:pop.sell_count,
-                            image = bike.ProductProductPhoto.Select(x => x.ProductPhoto.LargePhoto).FirstOrDefault(),
+                            image = photo.LargePhoto,
                         };
             bikes = bikes.OrderByDescending(x => x.sell_count);
-            return bikes.ToList();
+            var tmp = bikes.ToList();
+            List<dataBikes> result = new List<dataBikes>();
+            foreach (var item in tmp)
+                result.Add(new dataBikes
+                {
+                    id = item.id,
+                    name = item.name,
+                    price = item.price,
+                    sell_count = item.sell_count,
+                    image = item.image
+                });
+            return result;
         }
 
         [HttpGet("/AllBikesDetails")]
-        public IEnumerable<object> AllBikesDetails(string searchString)
+        public List<dataBikesDetails> AllBikesDetails()
         {
             var BikeDetails = from product in db.Product
+                              //Join description
+                              join model in db.ProductModelProductDescriptionCulture on product.ProductModelId equals model.ProductModelId
+                              //Join photo
+                              join productPhoto in db.ProductProductPhoto on product.ProductId equals productPhoto.ProductId
+                              join photo in db.ProductPhoto on productPhoto.ProductPhotoId equals photo.ProductPhotoId
+                              //Filter by category
                               join subCategory in db.ProductSubcategory on product.ProductSubcategoryId equals subCategory.ProductSubcategoryId
                               join category in db.ProductCategory on subCategory.ProductCategoryId equals category.ProductCategoryId
                               where category.Name.Equals("Bikes")
+                              //Select main fiield
                               select new
                               {
                                   id = product.ProductId,
-                                  description = product.ProductModel.ProductModelProductDescriptionCulture.Select(x => x.ProductDescription).FirstOrDefault(),
+                                  description = model.ProductDescription,
                                   name = product.Name,
                                   weight = product.Weight,
                                   Class = product.Class,
                                   style = product.Style,
-                                  image = product.ProductProductPhoto.Select(x => x.ProductPhoto.LargePhoto).FirstOrDefault(),
+                                  image = photo.LargePhoto,
                                   color = product.Color,
                                   size = product.Size,
                                   safety = product.SafetyStockLevel
                               };
-            return BikeDetails.ToList();
+            var tmp = BikeDetails.ToList();
+            List<dataBikesDetails> result = new List<dataBikesDetails>();
+            foreach (var item in tmp)
+                result.Add(new dataBikesDetails
+                {
+                    id = item.id,
+                    description = item.description,
+                    name = item.name,
+                    weight = item.weight,
+                    Class = item.Class,
+                    style = item.style,
+                    image = item.image,
+                    color = item.color,
+                    size = item.size,
+                    safety = item.safety
+                });
+            return result;
         }
     }
 }

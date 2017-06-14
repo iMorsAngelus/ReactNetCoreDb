@@ -35,8 +35,9 @@ z-index: 1;
 }
 
 .button{
+    outline: none;
     float: right;
-    margin: -1px -1px;
+    margin: -3px;
     width: 5vh;
     height: 5vh;
     border: none;

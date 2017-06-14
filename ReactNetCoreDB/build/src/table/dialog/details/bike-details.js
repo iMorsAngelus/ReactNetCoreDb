@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import {BikeProperty} from './bike-property'
-import {BikePropertyName} from './bike-property-name'
 import './bike-details.css'
 
 export class BikeDetails extends Component {

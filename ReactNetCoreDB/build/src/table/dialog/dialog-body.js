@@ -19,7 +19,7 @@ export class DialogBody extends Component {
                                 detailsProperty.push(<img
                                         className="bikeDetails div"
                                         src = {"data:image/png;base64,"+item.image} 
-                                        alt = "bikes image"/>)
+                                        alt = "bike"/>)
                                 detailsName.push(<div className="bikeDetails div">Bikes name</div>)
                                 detailsProperty.push(<div className="bikeDetails div">{item.name}</div>)
                                 detailsName.push(<div className="bikeDetails div">Description</div>)
@@ -36,6 +36,7 @@ export class DialogBody extends Component {
                                 detailsProperty.push(<div className="bikeDetails div">{item.color}</div>)
                                 detailsName.push(<div className="bikeDetails div">Safety stock level</div>)
                                 detailsProperty.push(<div className="bikeDetails div">{item.safety}</div>)
+                                return null;
                             })
                     }
                     <BikeDetails 

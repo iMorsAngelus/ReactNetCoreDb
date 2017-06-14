@@ -31,8 +31,8 @@ namespace ReactNetCoreDB
         {
             // Add framework services.
             services.AddMvc();
-            //Scaffold-DbContext "Server=WS194;Database=AdventureWorks2014;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
-            var connection = @"Server=.;Database=AdventureWorks2014;Trusted_Connection=True;";
+            //var connection = @"Server=WS194;Database=AdventureWorks2014;Trusted_Connection=True;";
+            var connection = @"Server=WS157;Database=AdventureWorks2014;User ID=awuser;Password=@dv3nturE;";
             services.AddDbContext<AdventureWorks2014Context>(options => options.UseSqlServer(connection));
         }
 
@@ -56,27 +56,6 @@ namespace ReactNetCoreDB
             app.UseStaticFiles();
 
             app.UseMvc();
-
-            ////React start
-            //app.UseReact(config =>
-            //{
-            //    // If you want to use server-side rendering of React components,
-            //    // add all the necessary JavaScript files here. This includes
-            //    // your components as well as all of their dependencies.
-            //    // See http://reactjs.net/ for more information. Example:
-            //    //config
-            //    //  .AddScript("~/Scripts/First.jsx")
-            //    //  .AddScript("~/Scripts/Second.jsx");
-
-            //    // If you use an external build too (for example, Babel, Webpack,
-            //    // Browserify or Gulp), you can improve performance by disabling
-            //    // ReactJS.NET's version of Babel and loading the pre-transpiled
-            //    // scripts. Example:
-            //    config
-            //        .AddScript("~/js/Table.jsx");
-            //    //  .SetLoadBabel(false)
-            //    //  .AddScriptWithoutTransform("~/Scripts/bundle.server.js");
-            //});
         }
     }
 }
