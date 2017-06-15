@@ -19,7 +19,7 @@ namespace ReactNetCoreDB.Controllers
         }
 
         [HttpGet("/AllBikes")]
-        public List<dataBikes> AllBikes()
+        public JsonResult AllBikes()
         {
             //Use join, because of decreasing speed by subquery method
             var populary = from product in db.Product
@@ -56,22 +56,11 @@ namespace ReactNetCoreDB.Controllers
                             image = photo.LargePhoto,
                         };
             bikes = bikes.OrderByDescending(x => x.sell_count);
-            var tmp = bikes.ToList();
-            List<dataBikes> result = new List<dataBikes>();
-            foreach (var item in tmp)
-                result.Add(new dataBikes
-                {
-                    id = item.id,
-                    name = item.name,
-                    price = item.price,
-                    sell_count = item.sell_count,
-                    image = item.image
-                });
-            return result;
+            return new JsonResult(bikes.ToList());
         }
 
         [HttpGet("/AllBikesDetails")]
-        public List<dataBikesDetails> AllBikesDetails()
+        public JsonResult AllBikesDetails()
         {
             var BikeDetails = from product in db.Product
                               //Join description
@@ -97,23 +86,7 @@ namespace ReactNetCoreDB.Controllers
                                   size = product.Size,
                                   safety = product.SafetyStockLevel
                               };
-            var tmp = BikeDetails.ToList();
-            List<dataBikesDetails> result = new List<dataBikesDetails>();
-            foreach (var item in tmp)
-                result.Add(new dataBikesDetails
-                {
-                    id = item.id,
-                    description = item.description,
-                    name = item.name,
-                    weight = item.weight,
-                    Class = item.Class,
-                    style = item.style,
-                    image = item.image,
-                    color = item.color,
-                    size = item.size,
-                    safety = item.safety
-                });
-            return result;
+            return new JsonResult(BikeDetails.ToList());
         }
     }
 }

@@ -1,10 +1,13 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using ReactNetCoreDB.Models;
 using ReactNetCoreDB.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ReactNetCoreDB
 {
@@ -17,9 +20,15 @@ namespace ReactNetCoreDB
         [TestInitialize]
         public void SetupContext()
         {
+            var serviceProvider = new ServiceCollection()
+                                .AddEntityFrameworkInMemoryDatabase()
+                                .BuildServiceProvider();
+
             var options = new DbContextOptionsBuilder<AdventureWorks2014Context>()
-            .UseInMemoryDatabase()
-            .Options;
+                              .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                              .UseInternalServiceProvider(serviceProvider)
+                              .Options;
+
             db = new AdventureWorks2014Context(options);
             CreateTestDataToDB();
             test = new HomeController(options);
@@ -131,11 +140,7 @@ namespace ReactNetCoreDB
             db.AddRange(category);
             db.AddRange(model);
             db.AddRange(transactionHistory);
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (Exception) { };
+            db.SaveChanges();
         }
 
         [TestMethod]
@@ -239,7 +244,9 @@ namespace ReactNetCoreDB
                     color = "10",
                 },
             };
-            var actual = test.AllBikesDetails();
+            var JData = JObject.FromObject(test.AllBikesDetails()).Last.ToString();
+            JData = JData.Substring(JData.IndexOf('['), JData.Length - JData.IndexOf('['));
+            var actual = JsonConvert.DeserializeObject<List<dataBikesDetails>>(JData);
             dataBikesDetailsComparer comparer = new dataBikesDetailsComparer();
             Assert.IsTrue(expected.SequenceEqual(actual, comparer));
             expected.RemoveAt(5);
@@ -308,7 +315,10 @@ namespace ReactNetCoreDB
                     image = new byte[0],
                 }
             };
-            List<dataBikes> actual = test.AllBikes();
+            //Parse response from controller
+            var JData = JObject.FromObject(test.AllBikes()).Last.ToString();
+            JData = JData.Substring(JData.IndexOf('['), JData.Length - JData.IndexOf('['));
+            var actual = JsonConvert.DeserializeObject<List<dataBikes>>(JData);
             dataBikesComparer comparer = new dataBikesComparer();
             Assert.IsTrue(expected.SequenceEqual(actual, comparer));
             expected.RemoveAt(5);
