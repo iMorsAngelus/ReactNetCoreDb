@@ -8,7 +8,8 @@ export class TextInput extends Component {
                         onChange={this.props.onTextChange}
                         name="search" 
                         type="text" 
-                        id="search_box"/>
+                        id="search_box"
+                        />
         );
-    }
-}
+    };
+};

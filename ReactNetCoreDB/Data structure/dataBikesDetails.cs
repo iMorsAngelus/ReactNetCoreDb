@@ -8,7 +8,7 @@ namespace ReactNetCoreDB.Models
     public struct dataBikesDetails
     {
         public int id;
-        public ProductDescription description;
+        public string description;
         public string name;
         public decimal? weight;
         public string Class;
@@ -32,7 +32,7 @@ namespace ReactNetCoreDB.Models
                     && x.size == y.size
                     && x.safety == y.safety
                     && (x.image.SequenceEqual(y.image) || (x.image.Count() == 0 && y.image.Count() == 0))
-                    && x.description.Description == y.description.Description
+                    && x.description == y.description
                )
                 return true;
             else return false;

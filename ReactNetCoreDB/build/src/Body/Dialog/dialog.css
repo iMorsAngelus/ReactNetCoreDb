@@ -11,6 +11,10 @@ background-color: rgba(255, 255, 255, 0.3);
 z-index: 1;
 }
 
+#hide {
+    display: none!important;
+}
+
 .dialog-container {
     width: 80%;
     height: 72.88vh;
@@ -28,10 +32,6 @@ z-index: 1;
 
 .dialog-body{
     width: 100%;
-}
-
-#hide {
-    display: none!important;
 }
 
 .button{

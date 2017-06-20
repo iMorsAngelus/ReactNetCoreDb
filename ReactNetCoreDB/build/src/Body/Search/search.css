@@ -1,6 +1,7 @@
 .tableBikesDetails.search{
     display: none;
 }
+
 #search
 {
     margin: 14px;
@@ -11,6 +12,9 @@
 #label
 {
     float: left;
+    font-family: "Trebuchet MS";
+    font-size: 14px;
+    font-weight: bold;
 }
 
 #search_box
@@ -23,8 +27,6 @@
     background-color: transparent;
     border: 0;
     height: 23px;
-    font-family: "Trebuchet MS";
-    font-size: 14px;
     width: 200px;
     padding-left: 16px;
     padding-top: 0;
@@ -38,7 +40,7 @@
     width: 33px;
     height: 23px;
     border: 0;
-    margin-left: 339px;
+    margin-left: 282px;
 }
 
 #search_word

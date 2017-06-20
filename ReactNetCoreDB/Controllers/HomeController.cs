@@ -9,34 +9,27 @@ using ReactNetCoreDB.Models;
 
 namespace ReactNetCoreDB.Controllers
 {
+    [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 200)]
     public class HomeController : Controller
     {
-        AdventureWorks2014Context db;
+        private const string bikesCategory = "Bikes";
+        private const string sell = "S";
+        private readonly AdventureWorks2014Context db;
+
         //Конструктор
         public HomeController(DbContextOptions<AdventureWorks2014Context> option)
         {
             db = new AdventureWorks2014Context(option);
+            
         }
 
         [HttpGet("/AllBikes")]
-        public JsonResult AllBikes()
+        public async Task<JsonResult> AllBikes()
         {
-            //Use join, because of decreasing speed by subquery method
-            var populary = from product in db.Product
-                           join transactionHistory in db.TransactionHistory on product.ProductId equals transactionHistory.ProductId
-                           join productSubCategory in db.ProductSubcategory on product.ProductSubcategoryId equals productSubCategory.ProductSubcategoryId
-                           join productCategory in db.ProductCategory on productSubCategory.ProductCategoryId equals productCategory.ProductCategoryId
-                           where transactionHistory.TransactionType.Equals("S") && productCategory.Name.Equals("Bikes")
-                           group transactionHistory by transactionHistory.ProductId into top
-                           select new
-                           {
-                               id = top.Key,
-                               sell_count = top.Select(x => x.Quantity).Sum()
-                           };
-            
+            //Use join, because of decreasing speed by subquery method         
             var bikes = from bike in db.Product
                         //Join populary bike
-                        join pop in populary on bike.ProductId equals pop.id into leftJoin
+                        join pop in PopularyBikes() on bike.ProductId equals pop.Key into leftJoin
                         //join photo
                         join productPhoto in db.ProductProductPhoto on bike.ProductId equals productPhoto.ProductId
                         join photo in db.ProductPhoto on productPhoto.ProductPhotoId equals photo.ProductPhotoId
@@ -45,22 +38,25 @@ namespace ReactNetCoreDB.Controllers
                         join productCategory in db.ProductCategory on productSubCategory.ProductCategoryId equals productCategory.ProductCategoryId
                         //Left join for get all bikes (Sold and not sold)
                         from pop in leftJoin.DefaultIfEmpty()
-                        where productCategory.Name.Equals("Bikes")
+                        where productCategory.Name.Equals(bikesCategory)
                         //Select main field
                         select new
                         {
                             id = bike.ProductId,
                             name = bike.Name,
                             price = bike.ListPrice,
-                            sell_count = (pop == null)? 0:pop.sell_count,
+                            sell_count = (pop == null)? 0: pop.Select(x => x.Quantity).Sum(),
                             image = photo.LargePhoto,
                         };
             bikes = bikes.OrderByDescending(x => x.sell_count);
-            return new JsonResult(bikes.ToList());
+            return await Task.Run(() =>
+            {
+                return new JsonResult(bikes.ToList());
+            });
         }
 
         [HttpGet("/AllBikesDetails")]
-        public JsonResult AllBikesDetails()
+        public async Task<JsonResult> AllBikesDetails()
         {
             var BikeDetails = from product in db.Product
                               //Join description
@@ -71,12 +67,12 @@ namespace ReactNetCoreDB.Controllers
                               //Filter by category
                               join subCategory in db.ProductSubcategory on product.ProductSubcategoryId equals subCategory.ProductSubcategoryId
                               join category in db.ProductCategory on subCategory.ProductCategoryId equals category.ProductCategoryId
-                              where category.Name.Equals("Bikes")
+                              where category.Name.Equals(bikesCategory)
                               //Select main fiield
                               select new
                               {
                                   id = product.ProductId,
-                                  description = model.ProductDescription,
+                                  description = model.ProductDescription.Description,
                                   name = product.Name,
                                   weight = product.Weight,
                                   Class = product.Class,
@@ -86,7 +82,24 @@ namespace ReactNetCoreDB.Controllers
                                   size = product.Size,
                                   safety = product.SafetyStockLevel
                               };
-            return new JsonResult(BikeDetails.ToList());
+
+            return await Task.Run(() =>
+            {
+                return new JsonResult(BikeDetails.ToList());
+            });
         }
+
+        private IQueryable<IGrouping<int, TransactionHistory>> PopularyBikes()
+        {
+            return from product in db.Product
+                        join transactionHistory in db.TransactionHistory on product.ProductId equals transactionHistory.ProductId
+                        join productSubCategory in db.ProductSubcategory on product.ProductSubcategoryId equals productSubCategory.ProductSubcategoryId
+                        join productCategory in db.ProductCategory on productSubCategory.ProductCategoryId equals productCategory.ProductCategoryId
+                        where transactionHistory.TransactionType.Equals(sell) && productCategory.Name.Equals(bikesCategory)
+                        group transactionHistory by transactionHistory.ProductId into top
+                        select top;
+        }
+
+
     }
 }

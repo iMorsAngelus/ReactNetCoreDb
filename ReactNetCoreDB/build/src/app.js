@@ -1,116 +1,138 @@
 import React, { Component } from 'react';
-import {Table} from './table/table';
-import {Header} from './header/header';
-import {Footer} from './footer/footer';
-import './index.css'
+import './App.css';
+import { Header } from './Header/header';
+import { Body } from './Body/body';
+import { Footer } from './Footer/footer';
 
-    let AllBikes = [];
-    let Top5Bikes = [];
-    let AllBikesDetails = [];
-    
+const tableHeader = [
+  ["Name"], 
+  ["Price"],
+  ["Count of sales"], 
+  ["Image"]
+];
+const dialogDetailsHeader = [
+  "Image",
+  "Bikes name",
+  "Description",
+  "Class",
+  "Style",
+  "Weight",
+  "Size",
+  "Color",
+  "Safety stock level"
+];
+
+let AllBikes = [];
+let Top5Bikes = [];
+let AllBikesDetails = [];
 
 class App extends Component {
 
-  state = {
-    visiable:false,
-    bikes:[],
-    bikesDetails:[]
-  }
-
+state = {
+  visiable:false,
+  bikes:[],
+  bikesDetails:[]
+};
 onDialogCloseClick = () => {
   this.setState({
     ...this.state,
     visiable: false
   });
-}
+};
 onTextChange = (event) => {
-  if (event.target.value.length === 0)
-        this.setState({
-          ...this.state,
-          bikes:Top5Bikes
-        })
-  else this.setState({
-          ...this.state,
-          bikes : AllBikes.filter(bike => {
-            if (bike.name.indexOf(event.target.value) !== -1)
-              return bike;
-            else return false;
-          })
-        })
-}
-onRowClick = (event) => {
-  this.setState(
-  {
+  let newBikes = AllBikes.slice(0,5);
+  let searchValue = event.target.value.toLowerCase();
+  
+  if (searchValue.length !== 0){
+    newBikes = AllBikes.filter(function(item){
+      let bikeName = item.name.toLowerCase();
+      let bikePrice = item.price.toString();
+      let bikeSellCount = item.sell_count.toString();
+
+      return (
+          //Filtering by name
+          bikeName.indexOf(searchValue) !== -1 
+          //Filtering by price
+          || bikePrice.indexOf(searchValue) !== -1
+          //Filtering by count of sales
+          || bikeSellCount.indexOf(searchValue) !== -1
+      );
+    });
+  };
+
+  this.setState({
     ...this.state,
-    visiable:true,
-    bikesDetails:AllBikesDetails.filter(details => {
-      if (details.id == event.target.id)
-      {
-        return details;
-      }else return false;
-    })
+    bikes:newBikes
   })
-}
+};
+onRowClick = (event) => {
+  this.setState({
+    ...this.state,
+    visiable : true,
+    bikesDetails: AllBikesDetails.filter(function(item){
+      return (event.target.id === item.id.toString())
+    })
+  });
+};
+
 componentDidMount(){
-  httpGet("/AllBikes")
+  //Recive all bikes
+  fetch("/AllBikes")
       .then (response => {
-        AllBikes = JSON.parse(response);
+        return response.json()
+      })
+      .then(jsonBikes => {
+        AllBikes = jsonBikes;
         Top5Bikes = AllBikes.slice(0,5);
+
         this.setState({
           ...this.state,
           bikes:Top5Bikes
-        })
-        return httpGet("/AllBikesDetails");
-      })
-      .then(responseDetails =>{
-        AllBikesDetails = JSON.parse(responseDetails)
-        //Cut only description without others info
-        AllBikesDetails = AllBikesDetails.map(function(item){
-                        item.description = item.description.description;
-                        return item;
-                    })
-        this.setState({
-          ...this.state,
-          bikesDetails:AllBikesDetails
-        })
+        });
       })
       .catch(error => {
         console.error(error);
+      });
+
+  //Recive details for all bikes
+  fetch("/AllBikesDetails")
+      .then(responseDetails =>{
+        return responseDetails.json()
       })
-}
+      .then(jsonDetails => {
+          AllBikesDetails = jsonDetails;
+
+          this.setState({
+            ...this.state,
+            bikesDetails:AllBikesDetails
+          })
+      })
+      .catch(error => {
+        console.error(error);
+      });
+};
+
   render() {
     return (
-      <div className="wrapper">
-        <Header></Header>
-        <Table
-            onTextChange={this.onTextChange} 
-            onRowClick={this.onRowClick}
-            onDialogCloseClick={this.onDialogCloseClick}
-            className="tableBikes" 
-            data={this.state.bikes}
-            dataDetails={this.state.bikesDetails}
-            visiable={this.state.visiable}>
-        </Table>
-        <Footer></Footer>
+      <div className="App">
+        <Header />
+        <Body 
+          //Table
+          className="table"
+          headerValue={ tableHeader }
+          bodyValue={ this.state.bikes }
+          onRowClick={ this.onRowClick }
+          onTextChange={ this.onTextChange }
+          //Dialog
+          visiable={ this.state.visiable }
+          detailsHeader={ dialogDetailsHeader }
+          dataDetails={ this.state.bikesDetails }      
+          onDialogCloseClick={ this.onDialogCloseClick }
+          />
+        <Footer />
       </div>
     );
-  }
-}
-
-function httpGet(httpUrl){
-  return new Promise((resolve, reject) => {
-    let xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET",httpUrl);
-
-    xmlHttp.onreadystatechange = function(){
-      if (xmlHttp.readyState === 4)
-        if (xmlHttp.status === 200)
-          resolve(xmlHttp.responseText);
-        else reject(new Error("Data load is failed"));
-    }
-
-    xmlHttp.send(null);
-  });
+  };
 }
 
 export default App;

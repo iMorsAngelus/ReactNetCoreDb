@@ -1,21 +1,22 @@
 import React, { Component } from 'react';
-import {TextInput} from './text-input'
+import {TextInput} from './text-input';
 import './search.css';
 
 export class SearchForm extends Component {
     render() {
         return(
-            <div id="search" className={this.props.className+" search"}>
+            <div id="search" className={this.props.className + " search"}>
                 <form id="search_form">
-                    <label id="label" >Filtering by name:</label>
+                    <label id="label" >Filtering:</label>
                     <TextInput 
-                        onTextChange = {this.props.onTextChange}
+                        onTextChange={this.props.onTextChange}
                         name="search" 
                         type="text" 
-                        id="search_box"/>
+                        id="search_box"
+                        />
                     <div id="search_button" />
                 </form>
             </div>
         );
-    }
-}
+    };
+};

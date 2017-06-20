@@ -31,9 +31,7 @@ namespace ReactNetCoreDB
         {
             // Add framework services.
             services.AddMvc();
-            //var connection = @"Server=WS194;Database=AdventureWorks2014;Trusted_Connection=True;";
-            var connection = @"Server=WS157;Database=AdventureWorks2014;User ID=awuser;Password=@dv3nturE;";
-            services.AddDbContext<AdventureWorks2014Context>(options => options.UseSqlServer(connection));
+            services.AddDbContext<AdventureWorks2014Context>( options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
