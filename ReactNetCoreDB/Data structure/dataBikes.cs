@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ReactNetCoreDB.Models;
 
-namespace ReactNetCoreDB
+namespace ReactNetCoreDB.Data_structure
 {
     public struct dataBikes
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ReactNetCoreDB.Models
+namespace ReactNetCoreDB.Data_structure
 {
     public struct dataBikesDetails
     {
