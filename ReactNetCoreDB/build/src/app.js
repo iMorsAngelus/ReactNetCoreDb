@@ -69,15 +69,14 @@ onScroll = (event) => {
       })
 
       fetch( "/FindBikes/" + countBikes + "/" + this.state.searchValue )
-        .then(response =>{
+        .then(response => {
           return response.json()
         })
         .then(jsonResult => {
             //Create new array => old + new 10 items
             let new_bikes = this.state.bikes;
 
-            if (jsonResult !== null)
-            {
+            if (jsonResult !== null){
               jsonResult.map(function(item){
                 new_bikes.push(item);
                 return null;
