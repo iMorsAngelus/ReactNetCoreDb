@@ -6,7 +6,8 @@ namespace ReactNetCoreDB.Business_logic
 {
     public interface IDbQuery
     {
-        IEnumerable<dataBikes> AllBikes();
-        IEnumerable<dataBikesDetails> AllBikesDetails();
+        IEnumerable<dataBikesDetails> BikeDetails(int id);
+        IEnumerable<dataBikes> FindBikes(string searchString, int ind);
+        IEnumerable<dataBikes> TopBikes();
     }
 }

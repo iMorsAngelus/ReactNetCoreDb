@@ -22,14 +22,12 @@ const dialogDetailsHeader = [
   "Safety stock level"
 ];
 
-let AllBikes = [];
-let Top5Bikes = [];
-let AllBikesDetails = [];
-
 class App extends Component {
 
 state = {
   visiable:false,
+  loadItems:false,
+  searchValue:"",
   bikes:[],
   bikesDetails:[]
 };
@@ -40,76 +38,95 @@ onDialogCloseClick = () => {
   });
 };
 onTextChange = (event) => {
-  let newBikes = AllBikes.slice(0,5);
   let searchValue = event.target.value.toLowerCase();
-  
-  if (searchValue.length !== 0){
-    newBikes = AllBikes.filter(function(item){
-      let bikeName = item.name.toLowerCase();
-      let bikePrice = item.price.toString();
-      let bikeSellCount = item.sell_count.toString();
-
-      return (
-          //Filtering by name
-          bikeName.indexOf(searchValue) !== -1 
-          //Filtering by price
-          || bikePrice.indexOf(searchValue) !== -1
-          //Filtering by count of sales
-          || bikeSellCount.indexOf(searchValue) !== -1
-      );
-    });
-  };
-
-  this.setState({
-    ...this.state,
-    bikes:newBikes
-  })
-};
-onRowClick = (event) => {
-  this.setState({
-    ...this.state,
-    visiable : true,
-    bikesDetails: AllBikesDetails.filter(function(item){
-      return (event.target.id === item.id.toString())
+  //Find bikes
+  fetch("/FindBikes/0/"+searchValue)
+    .then(response =>{
+      return response.json()
     })
-  });
-};
-
-componentDidMount(){
-  //Recive all bikes
-  fetch("/AllBikes")
-      .then (response => {
-        return response.json()
-      })
-      .then(jsonBikes => {
-        AllBikes = jsonBikes;
-        Top5Bikes = AllBikes.slice(0,5);
-
+    .then(jsonResult => {
         this.setState({
           ...this.state,
-          bikes:Top5Bikes
+          searchValue:searchValue,
+          bikes:jsonResult
         });
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+};
+onScroll = (event) => {
 
-  //Recive details for all bikes
-  fetch("/AllBikesDetails")
-      .then(responseDetails =>{
-        return responseDetails.json()
+  let bikeHeight = event.target.children[0].clientHeight;
+  let scrollBikeCount = event.target.scrollTop/bikeHeight + 5;
+  let countBikes = event.target.children.length;
+  if ( !this.state.loadItems && scrollBikeCount>countBikes-3){
+    
+      //Set flag while item load
+      this.setState({
+          ...this.state,
+          loadItems:true
       })
-      .then(jsonDetails => {
-          AllBikesDetails = jsonDetails;
 
-          this.setState({
-            ...this.state,
-            bikesDetails:AllBikesDetails
-          })
-      })
-      .catch(error => {
-        console.error(error);
-      });
+      fetch("/FindBikes/"+countBikes+"/"+this.state.searchValue)
+        .then(response =>{
+          return response.json()
+        })
+        .then(jsonResult => {
+            //Create new array => old + new 10 items
+            let new_bikes = this.state.bikes;
+
+            if (jsonResult !== null)
+            {
+              jsonResult.map(function(item){
+                new_bikes.push(item);
+                return null;
+              });
+            }
+
+            this.setState({
+              ...this.state,
+              bikes:new_bikes,
+              loadItems:false
+            })
+        })
+        .catch(error => {
+          console.error(error);
+        });
+  };
+
+}
+onRowClick = (event) => {
+    fetch("/BikeDetails/"+event.target.id)
+    .then(response =>{
+      return response.json()
+    })
+    .then(jsonResult => {
+        this.setState({
+          ...this.state,
+          visiable : true,
+          bikesDetails:jsonResult
+        });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+};
+componentDidMount(){
+  //Recive top 5 bikes
+  fetch("/TopBikes")
+    .then(response =>{
+      return response.json()
+    })
+    .then(jsonResult => {
+        this.setState({
+          ...this.state,
+          bikes:jsonResult
+        })
+    })
+    .catch(error => {
+      console.error(error);
+    });
 };
 
   render() {
@@ -121,6 +138,7 @@ componentDidMount(){
           className="table"
           headerValue={ tableHeader }
           bodyValue={ this.state.bikes }
+          onScroll = { this.onScroll }
           onRowClick={ this.onRowClick }
           onTextChange={ this.onTextChange }
           //Dialog

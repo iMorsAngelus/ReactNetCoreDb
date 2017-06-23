@@ -15,6 +15,7 @@ export class Table extends Component {
           className={ this.props.className + "Body" }
           bodyValue={ this.props.bodyValue }
           onRowClick={ this.props.onRowClick }
+          onScroll = { this.props.onScroll }
           />
       </div>
     );

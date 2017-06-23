@@ -5,7 +5,10 @@ import './table.css';
 export class TableBody extends Component {
   render() {
     return (
-      <div className={this.props.className}>
+      <div 
+        className={ this.props.className }
+        onScroll = { this.props.onScroll }
+        >
         {
           //Rows create
           this.props.bodyValue.map(function(item){

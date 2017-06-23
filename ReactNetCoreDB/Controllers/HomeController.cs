@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -19,24 +17,34 @@ namespace ReactNetCoreDB.Controllers
             this.query = query;    
         }
 
-        [HttpGet("/AllBikes")]
-        public async Task<JsonResult> AllBikes()
+        [Route("/FindBikes/{ind}/{searchString?}")]
+        [HttpGet]
+        public async Task<JsonResult> FindBikes(int ind, string searchString="")
         {
             return await Task.Run(() =>
             {
-                var a = query.AllBikes();
-                return new JsonResult(a);
-            }).ConfigureAwait(false);
+                return new JsonResult(query.FindBikes(searchString, ind));
+            });
         }
 
-        [HttpGet("/AllBikesDetails")]
-        public async Task<JsonResult> AllBikesDetails()
+        [Route("/BikeDetails/{id}")]
+        [HttpGet]
+        public async Task<JsonResult> BikeDetails(int id)
         {
             return await Task.Run(() =>
             {
-                return new JsonResult(query.AllBikesDetails());
-            }).ConfigureAwait(false);
+                return new JsonResult(query.BikeDetails(id));
+            });
         }
 
+        [Route("/TopBikes")]
+        [HttpGet]
+        public async Task<JsonResult> TopBikes()
+        {
+            return await Task.Run(() =>
+            {
+                return new JsonResult(query.TopBikes());
+            });
+        }
     }
 }

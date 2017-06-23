@@ -21,6 +21,7 @@ export class Body extends Component {
           className={ this.props.className }
           headerValue={ this.props.headerValue }
           bodyValue={ this.props.bodyValue }
+          onScroll = { this.props.onScroll }
           onRowClick={ this.props.onRowClick }
           />
       </div>
