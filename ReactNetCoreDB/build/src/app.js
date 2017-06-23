@@ -40,7 +40,7 @@ onDialogCloseClick = () => {
 onTextChange = (event) => {
   let searchValue = event.target.value.toLowerCase();
   //Find bikes
-  fetch("/FindBikes/0/"+searchValue)
+  fetch( "/FindBikes/0/" + searchValue )
     .then(response =>{
       return response.json()
     })
@@ -68,7 +68,7 @@ onScroll = (event) => {
           loadItems:true
       })
 
-      fetch("/FindBikes/"+countBikes+"/"+this.state.searchValue)
+      fetch( "/FindBikes/" + countBikes + "/" + this.state.searchValue )
         .then(response =>{
           return response.json()
         })
@@ -97,7 +97,7 @@ onScroll = (event) => {
 
 }
 onRowClick = (event) => {
-    fetch("/BikeDetails/"+event.target.id)
+    fetch( "/BikeDetails/" + event.target.id )
     .then(response =>{
       return response.json()
     })
@@ -114,7 +114,7 @@ onRowClick = (event) => {
 };
 componentDidMount(){
   //Recive top 5 bikes
-  fetch("/TopBikes")
+  fetch( "/TopBikes" )
     .then(response =>{
       return response.json()
     })
