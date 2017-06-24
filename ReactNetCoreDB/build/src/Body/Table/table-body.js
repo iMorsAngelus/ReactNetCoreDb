@@ -19,8 +19,8 @@ export class TableBody extends Component {
             items.push(item.sell_count);
             items.push(<img 
                 id={item.id}
-                src={"data:image/png;base64," + item.image}
-                alt={"bike"}
+                src={ (item.image === null)? "":"data:image/png;base64," + item.image}
+                alt=""
                 className="image"
                 />
             );

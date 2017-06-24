@@ -60,9 +60,12 @@
     background-position-y: 45%;
 }
 img{
-    height: 11vh;
+    margin-bottom: 6px;
+    height: 10.4vh;
 }
-
+img[src=""]{
+    content: url("./loading.gif");
+}
 .tableBody.li{
     border: none;
     margin-bottom: -4px;

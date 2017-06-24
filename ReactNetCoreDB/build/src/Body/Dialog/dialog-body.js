@@ -24,7 +24,7 @@ export class DialogBody extends Component {
                                 );
                                 detailsProperty.push(item.name);
                                 detailsProperty.push(item.description);
-                                detailsProperty.push(item.Class);
+                                detailsProperty.push(item.class);
                                 detailsProperty.push(item.style);
                                 detailsProperty.push(item.weight);
                                 detailsProperty.push(item.size);

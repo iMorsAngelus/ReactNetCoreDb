@@ -27,12 +27,15 @@ namespace ReactNetCoreDB.Business_logic
 
         public IEnumerable<dataBikes> FindBikes(string searchString, int ind)
         {
+            //Select only text data
             var FindBikes = Find(searchString).ToList();
+
             if (ind < FindBikes.Count - 1)
             {
                 IEnumerable<dataBikes> result = FindBikes.GetRange(ind, (FindBikes.Count - ind - 10> 0) ? 10 : FindBikes.Count - ind);
                 return result;
             }
+
             return null;
         }
 
