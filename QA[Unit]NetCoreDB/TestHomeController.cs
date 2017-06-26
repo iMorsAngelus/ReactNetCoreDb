@@ -8,7 +8,9 @@ using System;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using ReactNetCoreDB.Data_structure;
+using ReactNetCoreDB.Business_logic;
 
 namespace ReactNetCoreDB
 {
@@ -16,202 +18,83 @@ namespace ReactNetCoreDB
     public class TestHomeController
     {
         private AdventureWorks2014Context db = null;
+        private dataBikesComparer  bikesComparer = null;
+        private dataBikesDetailsComparer detailsComparer = null;
+        private DataAccessLayer classDataAccessLayer = null;
+        private Mock<IDbQuery> query = null;
         private HomeController testHomeController = null;
 
         [TestInitialize]
         public void SetupContext()
         {
+            //Initialize
+            //Comparer create
+            bikesComparer = new dataBikesComparer();
+            detailsComparer = new dataBikesDetailsComparer();
+
             var serviceProvider = new ServiceCollection()
                                 .AddEntityFrameworkInMemoryDatabase()
                                 .BuildServiceProvider();
-
             var options = new DbContextOptionsBuilder<AdventureWorks2014Context>()
                               .UseInMemoryDatabase(Guid.NewGuid().ToString())
                               .UseInternalServiceProvider(serviceProvider)
                               .Options;
 
+            //Create data
             db = new AdventureWorks2014Context(options);
             CreateTestDataToDB();
-            //testHomeController = new HomeController(options);
+
+            //Test DataAccessLayer
+            classDataAccessLayer = new DataAccessLayer(options);
+            //Test Controller
+            query = new Mock<IDbQuery>();
+            testHomeController = new HomeController(query.Object);
+
+        }
+
+        //Test context and query to db
+        [TestMethod]
+        public void TestDataAccessLayerTopBikes()
+        {
+            //Arange
+            var expected = ExpectedValue().Take(5);
+            //Act
+            var actual = classDataAccessLayer.GetTopBikes();
+            //Assert
+            Assert.IsTrue(expected.SequenceEqual(actual, bikesComparer));
         }
 
         [TestMethod]
-        public void TestAllBikes()
+        public void TestDataAccessLayerAllBikes()
         {
-            //List<dataBikes> expected = new List<dataBikes>{
-            //    new dataBikes {
-            //        id = 1,
-            //        name = "1",
-            //        price = (decimal)10.1,
-            //        sell_count = 25,
-            //        image = new byte[0],
-            //    },
-            //    new dataBikes {
-            //        id = 2,
-            //        name = "2",
-            //        price = (decimal)20.2,
-            //        sell_count = 0,
-            //        image = new byte[0],
-            //    },
-            //    new dataBikes {
-            //        id = 4,
-            //        name = "4",
-            //        price = (decimal)40.4,
-            //        sell_count = 0,
-            //        image = new byte[0],
-            //    },
-            //    new dataBikes {
-            //        id = 5,
-            //        name = "5",
-            //        price = (decimal)50.5,
-            //        sell_count = 0,
-            //        image = new byte[0],
-            //    },
-            //    new dataBikes {
-            //        id = 6,
-            //        name = "6",
-            //        price = (decimal)60.6,
-            //        sell_count = 0,
-            //        image = new byte[0],
-            //    },
-            //    new dataBikes {
-            //        id = 7,
-            //        name = "7",
-            //        price = (decimal)70.7,
-            //        sell_count = 0,
-            //        image = new byte[0],
-            //    },
-            //    new dataBikes {
-            //        id = 8,
-            //        name = "8",
-            //        price = (decimal)80.8,
-            //        sell_count = 0,
-            //        image = new byte[0],
-            //    },
-            //    new dataBikes {
-            //        id = 10,
-            //        name = "10",
-            //        price = (decimal)101,
-            //        sell_count = 0,
-            //        image = new byte[0],
-            //    }
-            //};
-            ////Parse response from controller
-            //var actual = parse<dataBikes>(JObject.FromObject(testHomeController.AllBikes()).Last.ToString());
-            //dataBikesComparer comparer = new dataBikesComparer();
-            //Assert.IsTrue(expected.SequenceEqual(actual, comparer));
-            //expected.RemoveAt(5);
-            //expected.Add(new dataBikes());
-            //Assert.IsFalse(expected.SequenceEqual(actual, comparer));
+            //Arange
+            var expected = ExpectedValue();
+            //Act
+            var actual = classDataAccessLayer.GetAllBikes();
+            //Assert
+            Assert.IsTrue(expected.SequenceEqual(actual, bikesComparer));
+        }
+
+        //Test Home Controller
+        [TestMethod]
+        public void TestControllerBikeDetails()
+        {
+            var actual = testHomeController.BikeDetails(1);
+            query.Verify(Top => Top.BikeDetails(1), Times.Once());
         }
 
         [TestMethod]
-        public void AllBikesDetails()
+        public void TestControllerFindBikes()
         {
-            //List<dataBikesDetails> expected = new List<dataBikesDetails>() {
-            //    new dataBikesDetails {
-            //        id = 1,
-            //        size = "1",
-            //        description = "Description 1",
-            //        name = "1",
-            //        weight = 1,
-            //        Class = "class 1",
-            //        style = "style 1",
-            //        image = new byte[0],
-            //        safety = 10,
-            //        color = "1",
-            //    },
-            //    new dataBikesDetails {
-            //        id = 2,
-            //        size = "2",
-            //        description ="Description 1",
-            //        name = "2",
-            //        weight = 2,
-            //        Class = "class 2",
-            //        style = "style 0",
-            //        image = new byte[0],
-            //        safety = 20,
-            //        color = "2",
-            //    },
-            //    new dataBikesDetails {
-            //        id = 4,
-            //        size = "4",
-            //        description = "Description 2",
-            //        name = "4",
-            //        weight = 4,
-            //        Class = "class 1",
-            //        style = "style 0",
-            //        image = new byte[0],
-            //        safety = 40,
-            //        color = "4",
-            //    },
-            //    new dataBikesDetails {
-            //        id = 5,
-            //        size = "5",
-            //        description = "Description 1",
-            //        name = "5",
-            //        weight = 5,
-            //        Class = "class 2",
-            //        style = "style 1",
-            //        image = new byte[0],
-            //        safety = 50,
-            //        color = "5",
-            //    },
-            //    new dataBikesDetails {
-            //        id = 6,
-            //        size = "6",
-            //        description = "Description 3",
-            //        name = "6",
-            //        weight = 6,
-            //        Class = "class 0",
-            //        style = "style 0",
-            //        image = new byte[0],
-            //        safety = 60,
-            //        color = "6",
-            //    },
-            //    new dataBikesDetails {
-            //        id = 7,
-            //        size = "7",
-            //        description = "Description 1",
-            //        name = "7",
-            //        weight = 7,
-            //        Class = "class 1",
-            //        style = "style 1",
-            //        image = new byte[0],
-            //        safety = 70,
-            //        color = "7",
-            //    },
-            //    new dataBikesDetails {
-            //        id = 8,
-            //        size = "8",
-            //        description = "Description 4",
-            //        name = "8",
-            //        weight = 8,
-            //        Class = "class 2",
-            //        style = "style 0",
-            //        image = new byte[0],
-            //        safety = 80,
-            //        color = "8",
-            //    },
-            //    new dataBikesDetails {
-            //        id = 10,
-            //        size = "10",
-            //        description = "Description 5",
-            //        name = "10",
-            //        weight = 11,
-            //        Class = "class 1",
-            //        style = "style 0",
-            //        image = new byte[0],
-            //        safety = 100,
-            //        color = "10",
-            //    },
-            //};
-            //var actual = parse<dataBikesDetails>(JObject.FromObject(testHomeController.AllBikesDetails()).Last.ToString());
-            //dataBikesDetailsComparer comparer = new dataBikesDetailsComparer();
-            //Assert.IsTrue(expected.SequenceEqual(actual, comparer));
-            //expected.RemoveAt(5);
-            //expected.Add(new dataBikesDetails());
-            //Assert.IsFalse(expected.SequenceEqual(actual, comparer));
+            var actual = testHomeController.FindBikes(0, "name 1");
+            query.Verify(Top => Top.FindBikes("name 1", 0), Times.Once());
+        }
+
+        [TestMethod]
+        public void TestControllerTopBikes()
+        {
+            var actual = testHomeController.TopBikes();
+            query.Verify(Top => Top.TopBikes(), Times.Once());
         }
 
         private void CreateTestDataToDB()
@@ -323,12 +206,70 @@ namespace ReactNetCoreDB
             db.SaveChanges();
         }
 
-        private List<T> parse<T>(string parseString)
+        private List<dataBikes> ExpectedValue()
         {
-            parseString = parseString.Substring(parseString.IndexOf('['), parseString.Length - parseString.IndexOf('['));
-            var result = JsonConvert.DeserializeObject<List<T>>(parseString);
-            return result;
-        }
+            //Initialize
+            List<dataBikes> expected = new List<dataBikes>{
+                new dataBikes {
+                    id = 1,
+                    name = "1",
+                    price = (decimal)10.1,
+                    sell_count = 25,
+                    image = new byte[0],
+                },
+                new dataBikes {
+                    id = 2,
+                    name = "2",
+                    price = (decimal)20.2,
+                    sell_count = 0,
+                    image = new byte[0],
+                },
+                new dataBikes {
+                    id = 4,
+                    name = "4",
+                    price = (decimal)40.4,
+                    sell_count = 0,
+                    image = new byte[0],
+                },
+                new dataBikes {
+                    id = 5,
+                    name = "5",
+                    price = (decimal)50.5,
+                    sell_count = 0,
+                    image = new byte[0],
+                },
+                new dataBikes {
+                    id = 6,
+                    name = "6",
+                    price = (decimal)60.6,
+                    sell_count = 0,
+                    image = new byte[0],
+                },
+                new dataBikes {
+                    id = 7,
+                    name = "7",
+                    price = (decimal)70.7,
+                    sell_count = 0,
+                    image = new byte[0],
+                },
+                new dataBikes {
+                    id = 8,
+                    name = "8",
+                    price = (decimal)80.8,
+                    sell_count = 0,
+                    image = new byte[0],
+                },
+                new dataBikes {
+                    id = 10,
+                    name = "10",
+                    price = (decimal)101,
+                    sell_count = 0,
+                    image = new byte[0],
+                }
+            };
 
+            //Return
+            return expected;
+        }
     }
 }

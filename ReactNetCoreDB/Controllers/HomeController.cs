@@ -17,15 +17,6 @@ namespace ReactNetCoreDB.Controllers
             this.query = query;    
         }
 
-        [Route("/FindBikes/{ind}/{searchString?}")]
-        [HttpGet]
-        public async Task<JsonResult> FindBikes(int ind, string searchString="")
-        {
-            return await Task.Run(() =>
-            {
-                return new JsonResult(query.FindBikes(searchString, ind));
-            });
-        }
 
         [Route("/BikeDetails/{id}")]
         [HttpGet]
@@ -34,6 +25,16 @@ namespace ReactNetCoreDB.Controllers
             return await Task.Run(() =>
             {
                 return new JsonResult(query.BikeDetails(id));
+            });
+        }
+
+        [Route("/FindBikes/{ind}/{searchString?}")]
+        [HttpGet]
+        public async Task<JsonResult> FindBikes(int ind, string searchString="")
+        {
+            return await Task.Run(() =>
+            {
+                return new JsonResult(query.FindBikes(searchString, ind));
             });
         }
 
