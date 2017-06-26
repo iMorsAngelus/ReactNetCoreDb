@@ -10,6 +10,7 @@ namespace ReactNetCoreDB.Business_logic
 {
     public class DbQuery : IDbQuery
     {
+        private const int countBikes = 10;
         protected readonly IDataAccessLayer data;
         protected Stack<IEnumerable<dataBikes>> Searching;
 
@@ -32,7 +33,7 @@ namespace ReactNetCoreDB.Business_logic
 
             if (ind < FindBikes.Count - 1)
             {
-                IEnumerable<dataBikes> result = FindBikes.GetRange(ind, (FindBikes.Count - ind - 10> 0) ? 10 : FindBikes.Count - ind);
+                IEnumerable<dataBikes> result = FindBikes.GetRange(ind, (FindBikes.Count - ind - countBikes> 0) ? countBikes : FindBikes.Count - ind);
                 return result;
             }
 
