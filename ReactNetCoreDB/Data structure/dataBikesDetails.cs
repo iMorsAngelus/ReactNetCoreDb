@@ -35,7 +35,7 @@ namespace ReactNetCoreDB.Data_structure
                     && x.description == y.description
                )
                 return true;
-            else return false;
+            return false;
         }
 
         public int GetHashCode(dataBikesDetails obj)

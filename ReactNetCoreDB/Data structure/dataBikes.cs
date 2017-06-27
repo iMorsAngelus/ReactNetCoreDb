@@ -27,7 +27,7 @@ namespace ReactNetCoreDB.Data_structure
                     && (x.image.SequenceEqual(y.image) || (x.image.Count() == 0  && y.image.Count() == 0) )
                )
                 return true;
-            else return false;
+            return false;
         }
 
         public int GetHashCode(dataBikes obj)

@@ -7,7 +7,6 @@ using ReactNetCoreDB.Business_logic;
 
 namespace ReactNetCoreDB.Controllers
 {
-    //[ResponseCache(Location = ResponseCacheLocation.Any, Duration = 200)]
     public class HomeController : Controller
     {
         IDbQuery query;
@@ -16,7 +15,6 @@ namespace ReactNetCoreDB.Controllers
         {
             this.query = query;    
         }
-
 
         [Route("/BikeDetails/{id}")]
         [HttpGet]

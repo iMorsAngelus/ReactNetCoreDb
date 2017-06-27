@@ -4,9 +4,11 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ReactNetCoreDB.Models;
 using ReactNetCoreDB.Data_structure;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ReactNetCoreDB.Business_logic
 {
+    [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 2)]
     public class DataAccessLayer:IDataAccessLayer
     {
         private const string bikesCategory = "Bikes";
