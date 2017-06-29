@@ -60,7 +60,7 @@ onScroll = (event) => {
   let bikeHeight = event.target.children[0].clientHeight;
   let scrollBikeCount = event.target.scrollTop/bikeHeight + 5;
   let countBikes = event.target.children.length;
-  if ( !this.state.loadItems && scrollBikeCount>countBikes-3){
+  if ( !this.state.loadItems && scrollBikeCount>countBikes-3 ){
     
       //Set flag while item load
       this.setState({

@@ -4,25 +4,26 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using ReactNetCoreDB.Models;
 using ReactNetCoreDB.Data_structure;
-using Microsoft.AspNetCore.Mvc;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ReactNetCoreDB.Business_logic
 {
-    [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 2)]
     public class DataAccessLayer:IDataAccessLayer
     {
         private const string bikesCategory = "Bikes";
+        private const int CashDelay = 10; //Minutes
         private const string sell = "S";
-        protected readonly AdventureWorks2014Context context;
-        protected List<dataBikes> AllBikes;
-        protected List<dataBikesDetails> AllBikesDetails;
+        protected readonly IDataProvider providerBikes;
+        protected readonly IDataProvider providerDetails;
+        protected List<dataBikes> AllBikes = null;
+        protected List<dataBikesDetails> AllBikesDetails = null;
 
-        public DataAccessLayer(DbContextOptions<AdventureWorks2014Context> option)
+        public DataAccessLayer(IDataProvider providerBikes, IDataProvider providerDetails)
         {
-            context = new AdventureWorks2014Context(option);
-            //Initialize data for client
-            InitializeAllBikes();
-            InitializeAllBikesDetails();
+            this.providerBikes = providerBikes;
+            this.providerDetails = providerDetails;
+            Cashe();
         }
 
         public IEnumerable<dataBikes> GetAllBikes()
@@ -42,27 +43,44 @@ namespace ReactNetCoreDB.Business_logic
 
         private IQueryable<IGrouping<int, TransactionHistory>> PopularyBikes()
         {
-            return from product in context.Product
-                   join transactionHistory in context.TransactionHistory on product.ProductId equals transactionHistory.ProductId
-                   join productSubCategory in context.ProductSubcategory on product.ProductSubcategoryId equals productSubCategory.ProductSubcategoryId
-                   join productCategory in context.ProductCategory on productSubCategory.ProductCategoryId equals productCategory.ProductCategoryId
+            return from product in providerBikes.Product
+                   join transactionHistory in providerBikes.TransactionHistory on product.ProductId equals transactionHistory.ProductId
+                   join productSubCategory in providerBikes.ProductSubcategory on product.ProductSubcategoryId equals productSubCategory.ProductSubcategoryId
+                   join productCategory in providerBikes.ProductCategory on productSubCategory.ProductCategoryId equals productCategory.ProductCategoryId
                    where transactionHistory.TransactionType.Equals(sell) && productCategory.Name.Equals(bikesCategory)
                    group transactionHistory by transactionHistory.ProductId into top
                    select top;
         }
 
+        private void Cashe()
+        {
+            if (AllBikes == null && AllBikesDetails == null)
+            {
+                InitializeAllBikes();
+                InitializeAllBikesDetails();
+            }
+
+            Task.Factory.StartNew(async () =>
+            {
+                await Task.Delay(CashDelay * 60000);
+                InitializeAllBikes();
+                InitializeAllBikesDetails();
+                Cashe();
+            });
+        }
+
         private void InitializeAllBikes()
         {
             //Use join, because of decreasing speed by subquery method         
-            var bikes = from bike in context.Product
-                            //Join populary bike
+            var bikes = from bike in providerBikes.Product
+                        //Join populary bike
                         join pop in PopularyBikes() on bike.ProductId equals pop.Key into leftJoin
                         //join photo
-                        join productPhoto in context.ProductProductPhoto on bike.ProductId equals productPhoto.ProductId
-                        join photo in context.ProductPhoto on productPhoto.ProductPhotoId equals photo.ProductPhotoId
+                        join productPhoto in providerBikes.ProductProductPhoto on bike.ProductId equals productPhoto.ProductId
+                        join photo in providerBikes.ProductPhoto on productPhoto.ProductPhotoId equals photo.ProductPhotoId
                         //Filter by category
-                        join productSubCategory in context.ProductSubcategory on bike.ProductSubcategoryId equals productSubCategory.ProductSubcategoryId
-                        join productCategory in context.ProductCategory on productSubCategory.ProductCategoryId equals productCategory.ProductCategoryId
+                        join productSubCategory in providerBikes.ProductSubcategory on bike.ProductSubcategoryId equals productSubCategory.ProductSubcategoryId
+                        join productCategory in providerBikes.ProductCategory on productSubCategory.ProductCategoryId equals productCategory.ProductCategoryId
                         //Left join for get all bikes (Sold and not sold)
                         from pop in leftJoin.DefaultIfEmpty()
                         where productCategory.Name.Equals(bikesCategory)
@@ -79,7 +97,8 @@ namespace ReactNetCoreDB.Business_logic
             bikes = bikes.OrderByDescending(x => x.sell_count);
 
             //Set value
-            AllBikes =  bikes
+            AllBikes = bikes
+                        .AsNoTracking()
                         .ToList()
                         .Select(bike => new dataBikes
                         {
@@ -93,15 +112,15 @@ namespace ReactNetCoreDB.Business_logic
 
         private void InitializeAllBikesDetails()
         {
-            var BikeDetails = from product in context.Product
+            var BikeDetails = from product in providerDetails.Product
                                   //Join description
-                              join model in context.ProductModelProductDescriptionCulture on product.ProductModelId equals model.ProductModelId
+                              join model in providerDetails.ProductModelProductDescriptionCulture on product.ProductModelId equals model.ProductModelId
                               //Join photo
-                              join productPhoto in context.ProductProductPhoto on product.ProductId equals productPhoto.ProductId
-                              join photo in context.ProductPhoto on productPhoto.ProductPhotoId equals photo.ProductPhotoId
+                              join productPhoto in providerDetails.ProductProductPhoto on product.ProductId equals productPhoto.ProductId
+                              join photo in providerDetails.ProductPhoto on productPhoto.ProductPhotoId equals photo.ProductPhotoId
                               //Filter by category
-                              join subCategory in context.ProductSubcategory on product.ProductSubcategoryId equals subCategory.ProductSubcategoryId
-                              join category in context.ProductCategory on subCategory.ProductCategoryId equals category.ProductCategoryId
+                              join subCategory in providerDetails.ProductSubcategory on product.ProductSubcategoryId equals subCategory.ProductSubcategoryId
+                              join category in providerDetails.ProductCategory on subCategory.ProductCategoryId equals category.ProductCategoryId
                               where category.Name.Equals(bikesCategory)
                               //Select main fiield
                               select new
@@ -120,6 +139,7 @@ namespace ReactNetCoreDB.Business_logic
 
             //Set value
             AllBikesDetails = BikeDetails
+                .AsNoTracking()
                 .ToList()
                 .Select(details => new dataBikesDetails
                 {

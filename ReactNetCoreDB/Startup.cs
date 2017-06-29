@@ -27,10 +27,15 @@ namespace ReactNetCoreDB
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            services.AddApplicationInsightsTelemetry(Configuration);
+
             services.AddDbContext<AdventureWorks2014Context>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Singleton);
+            services.AddScoped<IQuery, Query>();
             services.AddSingleton<IDataAccessLayer, DataAccessLayer>();
-            services.AddScoped<IDbQuery, DbQuery>();
+            //Add data provider
+            services.AddSingleton<DataProvider>( x => new DataProvider(x.GetService<AdventureWorks2014Context>()) );
+            services.AddSingleton<IDataProvider, DataProvider>();
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

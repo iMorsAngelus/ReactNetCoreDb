@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactNetCoreDB", "ReactNetCoreDB\ReactNetCoreDB.csproj", "{A7F525C8-92F6-4A19-9216-47DB3495FBD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA[Unit]NetCoreDB", "QA[Unit]NetCoreDB\QA[Unit]NetCoreDB.csproj", "{37483C06-373B-41E6-9F1B-E997347F3BC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QANetCoreDB", "QA[Unit]NetCoreDB\QANetCoreDB.csproj", "{37483C06-373B-41E6-9F1B-E997347F3BC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

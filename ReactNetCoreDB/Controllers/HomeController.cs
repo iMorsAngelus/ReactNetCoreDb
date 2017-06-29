@@ -9,9 +9,9 @@ namespace ReactNetCoreDB.Controllers
 {
     public class HomeController : Controller
     {
-        IDbQuery query;
+        IQuery query;
         //Конструктор
-        public HomeController(IDbQuery query)
+        public HomeController(IQuery query)
         {
             this.query = query;    
         }

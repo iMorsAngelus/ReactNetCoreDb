@@ -5,27 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="build\node_modules\**" />
-    <Compile Remove="build\public\**" />
-    <Compile Remove="build\src\**" />
-    <Content Remove="build\node_modules\**" />
-    <Content Remove="build\public\**" />
-    <Content Remove="build\src\**" />
-    <EmbeddedResource Remove="build\node_modules\**" />
-    <EmbeddedResource Remove="build\public\**" />
-    <EmbeddedResource Remove="build\src\**" />
-    <None Remove="build\node_modules\**" />
-    <None Remove="build\public\**" />
-    <None Remove="build\src\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="build\package.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="build\.gitignore" />
-    <None Remove="build\README.md" />
+    <Compile Remove="build\**" />
+    <Content Remove="build\**" />
+    <EmbeddedResource Remove="build\**" />
+    <None Remove="build\**" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
@@ -43,9 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="build\" />
   </ItemGroup>
 
 </Project>

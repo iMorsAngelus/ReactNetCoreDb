@@ -8,17 +8,14 @@ using System.Threading.Tasks;
 
 namespace ReactNetCoreDB.Business_logic
 {
-    public class DbQuery : IDbQuery
+    public class Query : IQuery
     {
         private const int countBikes = 10;
         protected readonly IDataAccessLayer data;
-        protected Stack<IEnumerable<dataBikes>> Searching;
 
-        public DbQuery(IDataAccessLayer data)
+        public Query(IDataAccessLayer data)
         {
             this.data = data;
-            Searching = new Stack<IEnumerable<dataBikes>>();
-            Searching.Push(data.GetAllBikes());
         }
 
         public IEnumerable<dataBikesDetails> BikeDetails(int id)
@@ -49,20 +46,9 @@ namespace ReactNetCoreDB.Business_logic
         {
             if (searchString.Length > 0)
             {
-                if (searchString.Length + 1 > Searching.Count)
-                {
-                    Searching.Push(Searching
-                                        .Peek()
-                                        .Where(bike => bike.name.ToLower().Contains(searchString))
-                                  );
-                }
-                else if (searchString.Length + 1 < Searching.Count)
-                {
-                    Searching.Pop();
-                }
-                return Searching.Peek();
+                var result = data.GetAllBikes();
+                return result.Where(bike => bike.name.ToLower().Contains(searchString));
             }
-            Searching.Pop();
             return TopBikes();
         }
 
