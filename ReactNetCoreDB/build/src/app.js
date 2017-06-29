@@ -110,7 +110,6 @@ onRowClick = (event) => {
     .catch(error => {
       console.error(error);
     });
-    console.log(this.state.bikesDetails);
 };
 componentDidMount(){
   //Recive top 5 bikes
