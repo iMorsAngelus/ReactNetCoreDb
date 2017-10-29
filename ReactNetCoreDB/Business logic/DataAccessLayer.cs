@@ -41,17 +41,6 @@ namespace ReactNetCoreDB.Business_logic
             return AllBikes.Take(5);
         }
 
-        private IQueryable<IGrouping<int, TransactionHistory>> PopularyBikes()
-        {
-            return from product in providerBikes.Product
-                   join transactionHistory in providerBikes.TransactionHistory on product.ProductId equals transactionHistory.ProductId
-                   join productSubCategory in providerBikes.ProductSubcategory on product.ProductSubcategoryId equals productSubCategory.ProductSubcategoryId
-                   join productCategory in providerBikes.ProductCategory on productSubCategory.ProductCategoryId equals productCategory.ProductCategoryId
-                   where transactionHistory.TransactionType.Equals(sell) && productCategory.Name.Equals(bikesCategory)
-                   group transactionHistory by transactionHistory.ProductId into top
-                   select top;
-        }
-
         private void Cashe()
         {
             if (AllBikes == null && AllBikesDetails == null)
@@ -67,6 +56,17 @@ namespace ReactNetCoreDB.Business_logic
                 InitializeAllBikesDetails();
                 Cashe();
             });
+        }
+
+        private IQueryable<IGrouping<int, TransactionHistory>> PopularyBikes()
+        {
+            return from product in providerBikes.Product
+                   join transactionHistory in providerBikes.TransactionHistory on product.ProductId equals transactionHistory.ProductId
+                   join productSubCategory in providerBikes.ProductSubcategory on product.ProductSubcategoryId equals productSubCategory.ProductSubcategoryId
+                   join productCategory in providerBikes.ProductCategory on productSubCategory.ProductCategoryId equals productCategory.ProductCategoryId
+                   where transactionHistory.TransactionType.Equals(sell) && productCategory.Name.Equals(bikesCategory)
+                   group transactionHistory by transactionHistory.ProductId into top
+                   select top;
         }
 
         private void InitializeAllBikes()
